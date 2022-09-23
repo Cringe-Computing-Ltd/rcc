@@ -1,13 +1,13 @@
 #pragma once
 #include "../parser.h"
 #include "../lexers/symbol.h"
-#include "literal.h"
+#include "multiplication.h"
 #include "symbol.h"
 
 namespace parsers {
-    class Multiplication : public ASTNode {
+    class Difference : public ASTNode {
     public:
-        Multiplication(std::shared_ptr<ASTNode> a, std::shared_ptr<ASTNode> b) {
+        Difference(std::shared_ptr<ASTNode> a, std::shared_ptr<ASTNode> b) {
             _a = a;
             _b = b;
         }
@@ -15,9 +15,9 @@ namespace parsers {
         static std::shared_ptr<ASTNode> parse(SessionList<std::vector<std::shared_ptr<LexerToken>>, std::shared_ptr<LexerToken>>& tl, bool& parsed) {
             tl.begin();
 
-            // First argument can be either a literal or symbol
+            // First argument can be a multiplication
             bool aParsed = false;
-            std::shared_ptr<ASTNode> a = Literal::parse(tl, aParsed);
+            std::shared_ptr<ASTNode> a = Multiplication::parse(tl, aParsed);
             if (!aParsed) {
                 a = Symbol::parse(tl, aParsed);
             }
@@ -33,14 +33,14 @@ namespace parsers {
                 return a;
             }
             std::shared_ptr<token::Symbol> mulsym = std::dynamic_pointer_cast<token::Symbol>(tl[0]);
-            if (!mulsym || mulsym->getValue() != '*') {
+            if (!mulsym || mulsym->getValue() != '-') {
                 tl.commit();
                 parsed = true;
                 return a;
             }
             tl.consume(1);
 
-            // The second argument can be a multiplicatio or division (TODO: Implement)
+            // The second argument can be a sum or subtraction (TODO: Implement)
             if (!tl.available()) {
                 tl.abort();
                 return NULL;
@@ -55,11 +55,11 @@ namespace parsers {
             // Commit changes to list and return AST npde
             tl.commit();
             parsed = true;
-            return std::dynamic_pointer_cast<ASTNode>(std::make_shared<Multiplication>(a, b));
+            return std::dynamic_pointer_cast<ASTNode>(std::make_shared<Difference>(a, b));
         }
 
         std::string dump() {
-            return "(" + _a->dump() + " * " + _b->dump() + ")";
+            return "(" + _a->dump() + " - " + _b->dump() + ")";
         }
 
     private:

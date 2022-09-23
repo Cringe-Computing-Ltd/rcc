@@ -16,7 +16,7 @@ class Parser {
 public:
     void registerHandler(ParserHandler handler);
 
-    std::vector<std::shared_ptr<ASTNode>> lex(std::vector<std::shared_ptr<LexerToken>> tks);
+    std::vector<std::shared_ptr<ASTNode>> parse(std::vector<std::shared_ptr<LexerToken>> tks);
 
 private:
     std::vector<ParserHandler> handlers;

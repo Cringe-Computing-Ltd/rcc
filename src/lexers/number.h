@@ -31,6 +31,8 @@ namespace token {
             return std::static_pointer_cast<LexerToken>(std::make_shared<Number>(std::atoll(numstr.c_str())));
         }
 
+        uint64_t getValue() { return _value; }
+
         std::string dump() {
             char buf[1024];
             sprintf(buf, "[NUMBER %" PRIu64 "]", _value);

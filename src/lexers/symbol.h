@@ -13,6 +13,8 @@ namespace token {
             return std::static_pointer_cast<LexerToken>(std::make_shared<Symbol>(c));
         }
 
+        char getValue() { return _sym; }
+
         std::string dump() {
             char buf[1024];
             sprintf(buf, "[SYMBOL '%c']", _sym);

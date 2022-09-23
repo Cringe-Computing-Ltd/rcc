@@ -13,6 +13,9 @@
 #include "lexers/number.h"
 #include "lexers/symbol.h"
 
+#include "parser.h"
+#include "parsers/sum.h"
+
 int main() {
     // Load file
     std::ifstream file("../test/test.c");
@@ -42,7 +45,27 @@ int main() {
     for (auto& tk : tks) {
         printf("%s\n", tk->dump().c_str());
     }
-    printf("=== DONE ===\n");
+    printf("=== LEXING DONE ===\n");
+
+    // Create parser
+    Parser ps;
+    ps.registerHandler(parsers::Sum::parse);
+
+    // Parse tokens
+    std::vector<std::shared_ptr<ASTNode>> ast;
+    try {
+        ast = ps.parse(tks);
+    }
+    catch (std::exception e) {
+        printf("Error: %s\n", e.what());
+        return -1;
+    }
+
+    // Dump AST
+    for (auto& an : ast) {
+        printf("%s\n", an->dump().c_str());
+    }
+    printf("=== PARSING DONE ===\n");
     
     return 0;
 }

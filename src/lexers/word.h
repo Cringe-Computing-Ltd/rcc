@@ -37,6 +37,8 @@ namespace token {
             return buf;
         }
 
+        const std::string& getName() { return _name; }
+
     private:
         std::string _name;
     };
