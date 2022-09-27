@@ -1,8 +1,8 @@
 #include "parser.h"
 #include <stdexcept>
 
-void Parser::registerHandler(ParserHandler handler) {
-    handlers.push_back(handler);
+void Parser::registerParser(std::shared_ptr<TokenParser> parser) {
+    parsers.push_back(parser);
 }
 
 std::vector<std::shared_ptr<ASTNode>> Parser::parse(std::vector<std::shared_ptr<LexerToken>> tks) {
@@ -12,9 +12,9 @@ std::vector<std::shared_ptr<ASTNode>> Parser::parse(std::vector<std::shared_ptr<
     while (tl.available()) {
         std::shared_ptr<ASTNode> an;
         bool parsed = false;
-        for (auto& handler : handlers) {
+        for (auto& pr : parsers) {
             // Try parsing
-            an = handler(tl, parsed);
+            an = pr->parse(tl, parsed);
             
             // If valid, save and stop
             if (parsed) {
