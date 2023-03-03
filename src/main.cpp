@@ -14,10 +14,7 @@
 #include "lexers/symbol.h"
 
 #include "parser.h"
-#include "parsers/binary_operator.h"
-#include "parsers/literal.h"
-#include "parsers/symbol.h"
-#include "parsers/category.h"
+#include "parsers/expression.h"
 
 #include <map>
 
@@ -53,39 +50,11 @@ int main() {
     printf("=== LEXING DONE ===\n");
 
     // Create parser
-    std::vector<std::shared_ptr<TokenParser>> lvl0Parsers = {
-        std::make_shared<parsers::LiteralParser>(),
-        std::make_shared<parsers::SymbolParser>()
-    };
-    auto lvl0Parser = std::make_shared<parsers::CategoryParser>(lvl0Parsers);
-
-    std::vector<std::shared_ptr<TokenParser>> lvl1Parsers = {
-        std::make_shared<parsers::BinaryOperatorParser>("*"),
-        std::make_shared<parsers::BinaryOperatorParser>("/"),
-        std::make_shared<parsers::BinaryOperatorParser>("%")
-    };
-    auto lvl1Parser = std::make_shared<parsers::CategoryParser>(lvl1Parsers);
-    for (auto& parser : lvl1Parsers) {
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPrecedent(lvl0Parser);
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPeer(lvl1Parser);
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPeer(lvl0Parser);
-    }
-
-    std::vector<std::shared_ptr<TokenParser>> lvl2Parsers = {
-        std::make_shared<parsers::BinaryOperatorParser>("+"),
-        std::make_shared<parsers::BinaryOperatorParser>("-"),
-    };
-    auto lvl2Parser = std::make_shared<parsers::CategoryParser>(lvl2Parsers);
-    for (auto& parser : lvl2Parsers) {
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPrecedent(lvl1Parser);
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPrecedent(lvl0Parser);
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPeer(lvl2Parser);
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPeer(lvl1Parser);
-        std::dynamic_pointer_cast<parsers::BinaryOperatorParser>(parser)->addPeer(lvl0Parser);
-    }
-
     Parser ps;
-    ps.registerParser(lvl2Parser);
+
+    auto expression = std::make_shared<parsers::Expression>();
+
+    ps.registerParser(expression);
 
     // Parse tokens
     std::vector<std::shared_ptr<ASTNode>> ast;
